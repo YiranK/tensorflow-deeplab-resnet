@@ -19,12 +19,13 @@ from deeplab_resnet import DeepLabResNetModel, ImageReader, prepare_label
 
 IMG_MEAN = np.array((104.00698793,116.66876762,122.67891434), dtype=np.float32)
 
-DATA_DIRECTORY = '/home/VOCdevkit'
+DATA_DIRECTORY = '/media/Disk/VOCdevkit/VOC2012'
 DATA_LIST_PATH = './dataset/val.txt'
 IGNORE_LABEL = 255
 NUM_CLASSES = 21
 NUM_STEPS = 1449 # Number of images in the validation set.
-RESTORE_FROM = './deeplab_resnet.ckpt'
+#RESTORE_FROM = './deeplab_resnet.ckpt'
+RESTORE_FROM = './snapshots/model.ckpt-20000.meta'
 
 def get_arguments():
     """Parse all the arguments provided from the CLI.
@@ -54,7 +55,10 @@ def load(saver, sess, ckpt_path):
       saver: TensorFlow saver object.
       sess: TensorFlow session.
       ckpt_path: path to checkpoint file with parameters.
-    ''' 
+    '''
+    if ckpt_path[-4:] == 'meta':
+      saver = tf.train.import_meta_graph(ckpt_path)
+      ckpt_path = ckpt_path[:-5] 
     saver.restore(sess, ckpt_path)
     print("Restored model parameters from {}".format(ckpt_path))
 
